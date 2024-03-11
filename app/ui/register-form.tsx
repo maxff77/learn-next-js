@@ -10,13 +10,14 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { useFormState, useFormStatus } from 'react-dom';
-import { register } from '../lib/actions';
+import { register } from '@/app/lib/actions';
 
 export default function RegisterForm() {
-  const initialState = { message: null, errors: {} };
-  const [errorMessage, dispatch] = useFormState(register, initialState);
+  // const initialState = { message: null, errors: {} };
 
-  console.log(errorMessage);
+  const [errorMessages, dispatch] = useFormState(register, undefined);
+
+  console.log(errorMessages);
 
   return (
     <form action={dispatch} className="space-y-3">
@@ -39,10 +40,20 @@ export default function RegisterForm() {
                 type="text"
                 name="name"
                 placeholder="Enter your name"
-                required
+                // required
               />
               <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
+            {errorMessages && (
+              <div className="block">
+                <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
+                {errorMessages.errors.name?.map((error, index) => (
+                  <p key={index} className=" inline-block text-sm text-red-500">
+                    {error}
+                  </p>
+                ))}
+              </div>
+            )}
           </div>
           <div>
             <label
@@ -58,10 +69,20 @@ export default function RegisterForm() {
                 type="email"
                 name="email"
                 placeholder="Enter your email address"
-                required
+                // required
               />
               <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
+            {errorMessages && (
+              <div className="block">
+                <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
+                {errorMessages.errors.email?.map((error, index) => (
+                  <p key={index} className=" inline-block text-sm text-red-500">
+                    {error}
+                  </p>
+                ))}
+              </div>
+            )}
           </div>
           <div className="mt-4">
             <label
@@ -77,11 +98,21 @@ export default function RegisterForm() {
                 type="password"
                 name="password"
                 placeholder="Enter password"
-                required
-                minLength={6}
+                // required
+                // minLength={6}
               />
               <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
+            {errorMessages && (
+              <div className="block">
+                <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
+                {errorMessages.errors.password?.map((error, index) => (
+                  <p key={index} className=" inline-block text-sm text-red-500">
+                    {error}
+                  </p>
+                ))}
+              </div>
+            )}
           </div>
           <div className="mt-4">
             <label
@@ -97,11 +128,21 @@ export default function RegisterForm() {
                 type="password"
                 name="confirmPassword"
                 placeholder="Enter password"
-                required
-                minLength={6}
+                // required
+                // minLength={6}
               />
               <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
+            {errorMessages && (
+              <div className="block">
+                <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
+                {errorMessages.errors.confirmPassword?.map((error, index) => (
+                  <p key={index} className=" inline-block text-sm text-red-500">
+                    {error}
+                  </p>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <LoginButton />
@@ -109,14 +150,7 @@ export default function RegisterForm() {
           className="flex h-8 items-end space-x-1"
           aria-live="polite"
           aria-atomic="true"
-        >
-          {errorMessage && (
-            <>
-              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">{errorMessage}</p>
-            </>
-          )}
-        </div>
+        ></div>
         <div className="flex h-8 items-end space-x-1">
           {/* Add form errors here */}
         </div>

@@ -24,12 +24,30 @@ const FormSchemaInvoice = z.object({
 
 const FormSchemaUser = z.object({
   id: z.string(),
-  name: z.string().min(3, {
-    message: 'Escribe un nombre mayor a 3 caracteres',
+  name: z
+    .string({
+      invalid_type_error: 'Escribe un nombre valido',
+    })
+    .min(3, {
+      message: 'Escribe un nombre mayor a 3 caracteres',
+    }),
+  email: z
+    .string({
+      invalid_type_error: 'Escribe un email valido',
+    })
+    .email({
+      message: 'Escribe un email valido',
+    }),
+  password: z
+    .string({
+      invalid_type_error: 'Escribe una contraseña valida',
+    })
+    .min(6, {
+      message: 'Escribe una contraseña mayor a 6',
+    }),
+  confirmPassword: z.string({
+    invalid_type_error: 'Confirma tu contraseña',
   }),
-  email: z.string().email(),
-  password: z.string().min(6),
-  confirmPassword: z.string(),
 });
 
 // Creamos los esquemas de cada acción
@@ -58,7 +76,7 @@ export type StateUser = {
 };
 
 export async function createInvoice(
-  prevStateInvoce: StateInvoice,
+  prevState: StateInvoice,
   formData: FormData,
 ) {
   // Validate form using Zod
@@ -101,7 +119,7 @@ export async function createInvoice(
 
 export async function updateInvoice(
   id: string,
-  prevState: State,
+  prevState: StateInvoice,
   formData: FormData,
 ) {
   const validatedFields = UpdateInvoice.safeParse({
@@ -163,10 +181,7 @@ export async function authenticate(
   }
 }
 
-export async function register(
-  prevState: StateUser,
-  formData: FormData,
-) {
+export async function register(prevState: StateUser, formData: FormData) {
   //   console.log(formData.get('name'));
   //   console.log(formData.get('email'));
   //   console.log(formData.get('password'));
@@ -187,6 +202,13 @@ export async function register(
       message: 'Hubo un error al crear el usuario',
     };
   }
+
+  // if (!validatedFields.success) {
+  //   return {
+  //     errors: validatedFields.error.flatten().fieldErrors,
+  //     message: 'Hubo un error al crear el usuario',
+  //   };
+  // }
 
   // const { name, email, password, confirmPassword } = validatedFields.data;
   try {
