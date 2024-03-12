@@ -8,17 +8,14 @@ import {
   UserIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Button } from './button';
+import { Button } from '../button';
 import { useFormState, useFormStatus } from 'react-dom';
-import { register } from '@/app/lib/actions';
+import { registerUser } from '@/app/lib/actions';
+import LinkButton from './link-button';
 
-export default function RegisterForm() {
-  // const initialState = { message: null, errors: {} };
-
-  const [errorMessages, dispatch] = useFormState(register, undefined);
-
-  console.log(errorMessages);
-
+export default function UserregisterUserForm() {
+  const initialState = { message: null, errors: {} };
+  const [errorMessages, dispatch] = useFormState(registerUser, initialState);
   return (
     <form action={dispatch} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
@@ -44,7 +41,9 @@ export default function RegisterForm() {
               />
               <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
-            {errorMessages && (
+            {errorMessages &&
+            errorMessages.errors &&
+            errorMessages.errors.name ? (
               <div className="block">
                 <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
                 {errorMessages.errors.name?.map((error, index) => (
@@ -53,6 +52,8 @@ export default function RegisterForm() {
                   </p>
                 ))}
               </div>
+            ) : (
+              ''
             )}
           </div>
           <div>
@@ -73,7 +74,9 @@ export default function RegisterForm() {
               />
               <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
-            {errorMessages && (
+            {errorMessages &&
+            errorMessages.errors &&
+            errorMessages.errors.email ? (
               <div className="block">
                 <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
                 {errorMessages.errors.email?.map((error, index) => (
@@ -82,6 +85,8 @@ export default function RegisterForm() {
                   </p>
                 ))}
               </div>
+            ) : (
+              ''
             )}
           </div>
           <div className="mt-4">
@@ -103,7 +108,9 @@ export default function RegisterForm() {
               />
               <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
-            {errorMessages && (
+            {errorMessages &&
+            errorMessages.errors &&
+            errorMessages.errors.password ? (
               <div className="block">
                 <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
                 {errorMessages.errors.password?.map((error, index) => (
@@ -112,6 +119,8 @@ export default function RegisterForm() {
                   </p>
                 ))}
               </div>
+            ) : (
+              ''
             )}
           </div>
           <div className="mt-4">
@@ -133,7 +142,9 @@ export default function RegisterForm() {
               />
               <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
-            {errorMessages && (
+            {errorMessages &&
+            errorMessages.errors &&
+            errorMessages.errors.confirmPassword ? (
               <div className="block">
                 <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
                 {errorMessages.errors.confirmPassword?.map((error, index) => (
@@ -142,8 +153,24 @@ export default function RegisterForm() {
                   </p>
                 ))}
               </div>
+            ) : (
+              ''
             )}
           </div>
+        </div>
+        <div
+          className="flex h-8 items-end space-x-1"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {errorMessages && errorMessages.message ? (
+            <>
+              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+              <p className="text-sm text-red-500">{errorMessages.message}</p>
+            </>
+          ) : (
+            ''
+          )}
         </div>
         <LoginButton />
         <div
@@ -151,6 +178,7 @@ export default function RegisterForm() {
           aria-live="polite"
           aria-atomic="true"
         ></div>
+        <LinkButton href="/login" text="¿Ya tienes cuenta?" />
         <div className="flex h-8 items-end space-x-1">
           {/* Add form errors here */}
         </div>

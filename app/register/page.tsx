@@ -1,5 +1,5 @@
 import AcmeLogo from '@/app/ui/acme-logo';
-import RegisterForm from '../ui/register-form';
+import RegisterForm from '../ui/auth/register-form';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

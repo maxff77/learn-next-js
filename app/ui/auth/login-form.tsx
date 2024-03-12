@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { lusitana } from '@/app/ui/fonts';
 import {
@@ -7,9 +7,10 @@ import {
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Button } from './button';
+import { Button } from '../button';
 import { useFormState, useFormStatus } from 'react-dom';
 import { authenticate } from '@/app/lib/actions';
+import LinkButton from './link-button';
 
 export default function LoginForm() {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
@@ -26,7 +27,7 @@ export default function LoginForm() {
               className="mb-3 mt-5 block text-xs font-medium text-gray-900"
               htmlFor="email"
             >
-              Email
+              Email o Usuario
             </label>
             <div className="relative">
               <input
@@ -62,6 +63,7 @@ export default function LoginForm() {
           </div>
         </div>
         <LoginButton />
+
         <div
           className="flex h-8 items-end space-x-1"
           aria-live="polite"
@@ -74,6 +76,7 @@ export default function LoginForm() {
             </>
           )}
         </div>
+        <LinkButton href='/register' text='¿No tienes cuenta?' />
         <div className="flex h-8 items-end space-x-1">
           {/* Add form errors here */}
         </div>

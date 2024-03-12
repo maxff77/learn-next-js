@@ -5,6 +5,8 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import bcrypt from 'bcrypt';
+const { v4: uuidv4 } = require('uuid');
 
 // Esquema de los datos de una factura
 
@@ -46,7 +48,7 @@ const FormSchemaUser = z.object({
       message: 'Escribe una contraseña mayor a 6',
     }),
   confirmPassword: z.string({
-    invalid_type_error: 'Confirma tu contraseña',
+    invalid_type_error: 'Escribe una contraseña valida',
   }),
 });
 
@@ -66,13 +68,13 @@ export type StateInvoice = {
 };
 
 export type StateUser = {
-  errors: {
+  errors?: {
     name?: string[];
     email?: string[];
     password?: string[];
     confirmPassword?: string[];
   };
-  message: string | null;
+  message?: string | null;
 };
 
 export async function createInvoice(
@@ -172,29 +174,22 @@ export async function authenticate(
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
-          return 'Invalid credentials.';
+          return 'Datos incorrectos.';
         default:
-          return 'Something went wrong.';
+          return 'Ocurrio un error.';
       }
     }
     throw error;
   }
 }
 
-export async function register(prevState: StateUser, formData: FormData) {
-  //   console.log(formData.get('name'));
-  //   console.log(formData.get('email'));
-  //   console.log(formData.get('password'));
-  //   console.log(formData.get('confirmPassword'));
-
+export async function registerUser( prevState: StateUser, formData: FormData) {
   const validatedFields = CreateUser.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
     password: formData.get('password'),
     confirmPassword: formData.get('confirmPassword'),
   });
-
-  console.log(validatedFields);
 
   if (!validatedFields.success) {
     return {
@@ -203,14 +198,37 @@ export async function register(prevState: StateUser, formData: FormData) {
     };
   }
 
-  // if (!validatedFields.success) {
-  //   return {
-  //     errors: validatedFields.error.flatten().fieldErrors,
-  //     message: 'Hubo un error al crear el usuario',
-  //   };
-  // }
+  const { name, email, password, confirmPassword } = validatedFields.data;
 
-  // const { name, email, password, confirmPassword } = validatedFields.data;
+  if (password !== confirmPassword) {
+    return {
+      errors: {
+        confirmPassword: ['Las contraseñas no coinciden'],
+      },
+      message: 'Las contraseñas no coinciden',
+    };
+  }
+
+  const passwordHashed = await bcrypt.hash(password, 10);
+  const createDate = new Date().toISOString().split('T')[0];
+  const id = uuidv4();
+
+  console.log({
+    id,
+    name,
+    email,
+    passwordHashed,
+  });
+
   try {
-  } catch (error) {}
+    await sql`
+      INSERT INTO users(id, name, email, password)
+      VALUES(${id}, ${name}, ${email}, ${passwordHashed})    
+    `;
+  } catch (error) {
+    return {
+      message: 'Hubo un error en la base de datos',
+    };
+  }
+  redirect('/login')
 }
