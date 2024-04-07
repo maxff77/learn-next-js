@@ -8,19 +8,51 @@ import {
   UserIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Button } from '../button';
-import { useFormState, useFormStatus } from 'react-dom';
-import { registerUser } from '@/app/lib/actions';
-import LinkButton from './link-button';
+import { Button } from '@/app/ui/button';
+import { useState } from 'react';
+import LinkButton from '@/app/auth/components/link-button';
+import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
+import { set } from 'zod';
 
 export default function UserregisterUserForm() {
-  const initialState = { message: null, errors: {} };
-  const [errorMessages, dispatch] = useFormState(registerUser, initialState);
+  const router = useRouter();
+  const [statusForm, setStatusForm] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = handleSubmit(async (data) => {
+    setStatusForm(true);
+    if (data.password != data.confirmPassword) {
+      return alert('Las contraseñas no coinciden');
+    }
+
+    const { username, email, password } = data;
+    const response = await fetch('/auth/register/lib', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: username,
+        email: email,
+        password: password,
+      }),
+      headers: {
+        'Content-type': 'aplication/json',
+      },
+    });
+    if (response.ok) {
+      router.push('/auth/login');
+    }
+  });
+
   return (
-    <form action={dispatch} className="space-y-3">
+    <form onSubmit={onSubmit} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
         <h1 className={`${lusitana.className} mb-3 text-2xl`}>
-          Please register to continue.
+          Por favor registrate para continuar.
         </h1>
         <div className="w-full">
           <div>
@@ -28,20 +60,23 @@ export default function UserregisterUserForm() {
               className="mb-3 mt-5 block text-xs font-medium text-gray-900"
               htmlFor="name"
             >
-              Name
+              Nombre
             </label>
             <div className="relative">
               <input
                 className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="name"
                 type="text"
-                name="name"
-                placeholder="Enter your name"
-                // required
+                // name="name"
+                placeholder="Ingresa tu nombre"
+                required
+                {...register('username', {
+                  required: { value: true, message: 'Este campo es requerido' },
+                })}
               />
               <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
-            {errorMessages &&
+            {/* {errorMessages &&
             errorMessages.errors &&
             errorMessages.errors.name ? (
               <div className="block">
@@ -54,6 +89,14 @@ export default function UserregisterUserForm() {
               </div>
             ) : (
               ''
+            )} */}
+            {errors.username && (
+              <div className="block">
+                <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
+                <p className=" inline-block text-sm text-red-500">
+                  {errors.username.message}
+                </p>
+              </div>
             )}
           </div>
           <div>
@@ -61,20 +104,23 @@ export default function UserregisterUserForm() {
               className="mb-3 mt-5 block text-xs font-medium text-gray-900"
               htmlFor="email"
             >
-              Email
+              Correo
             </label>
             <div className="relative">
               <input
                 className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="email"
                 type="email"
-                name="email"
-                placeholder="Enter your email address"
-                // required
+                // name="email"
+                placeholder="Ingresa tu correo electronico"
+                required
+                {...register('email', {
+                  required: { value: true, message: 'Este campo es requerido' },
+                })}
               />
               <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
-            {errorMessages &&
+            {/* {errorMessages &&
             errorMessages.errors &&
             errorMessages.errors.email ? (
               <div className="block">
@@ -87,6 +133,14 @@ export default function UserregisterUserForm() {
               </div>
             ) : (
               ''
+            )} */}
+            {errors.email && (
+              <div className="block">
+                <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
+                <p className=" inline-block text-sm text-red-500">
+                  {errors.email.message}
+                </p>
+              </div>
             )}
           </div>
           <div className="mt-4">
@@ -94,21 +148,24 @@ export default function UserregisterUserForm() {
               className="mb-3 mt-5 block text-xs font-medium text-gray-900"
               htmlFor="password"
             >
-              Password
+              Contraseña
             </label>
             <div className="relative">
               <input
                 className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="password"
                 type="password"
-                name="password"
-                placeholder="Enter password"
-                // required
-                // minLength={6}
+                // name="password"
+                placeholder="Ingresa tu contraseña"
+                required
+                minLength={6}
+                {...register('password', {
+                  required: { value: true, message: 'Este campo es requerido' },
+                })}
               />
               <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
-            {errorMessages &&
+            {/* {errorMessages &&
             errorMessages.errors &&
             errorMessages.errors.password ? (
               <div className="block">
@@ -121,6 +178,14 @@ export default function UserregisterUserForm() {
               </div>
             ) : (
               ''
+            )} */}
+            {errors.password && (
+              <div className="block">
+                <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
+                <p className=" inline-block text-sm text-red-500">
+                  {errors.password.message}
+                </p>
+              </div>
             )}
           </div>
           <div className="mt-4">
@@ -128,21 +193,24 @@ export default function UserregisterUserForm() {
               className="mb-3 mt-5 block text-xs font-medium text-gray-900"
               htmlFor="confirmPassword"
             >
-              Confirm Password
+              Confirmar contraseña
             </label>
             <div className="relative">
               <input
                 className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
                 id="confirmPassword"
                 type="password"
-                name="confirmPassword"
-                placeholder="Enter password"
-                // required
-                // minLength={6}
+                // name="confirmPassword"
+                placeholder="Ingresa la confirmación de contraseña"
+                required
+                minLength={6}
+                {...register('confirmPassword', {
+                  required: { value: true, message: 'Este campo es requerido' },
+                })}
               />
               <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
-            {errorMessages &&
+            {/* {errorMessages &&
             errorMessages.errors &&
             errorMessages.errors.confirmPassword ? (
               <div className="block">
@@ -155,6 +223,14 @@ export default function UserregisterUserForm() {
               </div>
             ) : (
               ''
+            )} */}
+            {errors.confirmPassword && (
+              <div className="block">
+                <ExclamationCircleIcon className=" inline-block h-5 w-5 text-red-500" />
+                <p className=" inline-block text-sm text-red-500">
+                  {errors.confirmPassword.message}
+                </p>
+              </div>
             )}
           </div>
         </div>
@@ -163,22 +239,22 @@ export default function UserregisterUserForm() {
           aria-live="polite"
           aria-atomic="true"
         >
-          {errorMessages && errorMessages.message ? (
+          {/* {errorMessages && errorMessages.message ? (
             <>
               <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
               <p className="text-sm text-red-500">{errorMessages.message}</p>
             </>
           ) : (
             ''
-          )}
+          )} */}
         </div>
-        <LoginButton />
+        <LoginButton status={statusForm} />
         <div
           className="flex h-8 items-end space-x-1"
           aria-live="polite"
           aria-atomic="true"
         ></div>
-        <LinkButton href="/login" text="¿Ya tienes cuenta?" />
+        <LinkButton href="/auth/login" text="¿Ya tienes cuenta?" />
         <div className="flex h-8 items-end space-x-1">
           {/* Add form errors here */}
         </div>
@@ -187,11 +263,9 @@ export default function UserregisterUserForm() {
   );
 }
 
-function LoginButton() {
-  const { pending } = useFormStatus();
-
+function LoginButton({ status }: { status: boolean }) {
   return (
-    <Button className="mt-4 w-full" aria-disabled={pending}>
+    <Button className="mt-4 w-full" aria-disabled={status}>
       Register <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
     </Button>
   );

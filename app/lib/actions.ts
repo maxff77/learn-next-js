@@ -3,8 +3,8 @@ import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { signIn } from '@/auth';
-import { AuthError } from 'next-auth';
+// import { signIn } from '@/auth';
+// import { AuthError } from 'next-auth';
 import bcrypt from 'bcrypt';
 const { v4: uuidv4 } = require('uuid');
 
@@ -168,19 +168,19 @@ export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
 ) {
-  try {
-    await signIn('credentials', formData);
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Datos incorrectos.';
-        default:
-          return 'Ocurrio un error.';
-      }
-    }
-    throw error;
-  }
+  // try {
+  //   await signIn('credentials', formData);
+  // } catch (error) {
+  //   if (error instanceof AuthError) {
+  //     switch (error.type) {
+  //       case 'CredentialsSignin':
+  //         return 'Datos incorrectos.';
+  //       default:
+  //         return 'Ocurrio un error.';
+  //     }
+  //   }
+  //   throw error;
+  // }
 }
 
 export async function registerUser( prevState: StateUser, formData: FormData) {
